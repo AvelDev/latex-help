@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaTeX Ściąga</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --surface2: #1e1e1e;
+    --border: #2a2a2a;
+    --accent: #e8ff00;
+    --accent2: #00d4ff;
+    --text: #e8e8e8;
+    --muted: #666;
+    --code-bg: #111;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 2.5rem 1.5rem;
+    display: flex;
+    align-items: flex-end;
+    gap: 2rem;
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    background: rgba(13,13,13,0.96);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+
+  .logo {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .logo span { color: var(--accent); }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  #search {
+    margin-left: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    width: 220px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  #search:focus { border-color: var(--accent); }
+  #search::placeholder { color: var(--muted); }
+
+  nav {
+    display: flex;
+    gap: 0.4rem;
+    padding: 0.8rem 2.5rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    flex-wrap: wrap;
+    overflow-x: auto;
+  }
+
+  .nav-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.8rem;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .nav-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+  main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 2.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 1.2rem;
+    align-items: start;
+  }
+
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .section:hover { border-color: #3a3a3a; }
+  .section.hidden { display: none; }
+
+  .section-header {
+    padding: 0.8rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+
+  .section-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: var(--accent);
+    color: #000;
+    padding: 0.15rem 0.5rem;
+    border-radius: 2px;
+  }
+  .section-tag.blue { background: var(--accent2); }
+  .section-tag.orange { background: #ff8c00; }
+  .section-tag.pink { background: #ff4d8a; }
+  .section-tag.green { background: #00e07a; }
+  .section-tag.purple { background: #b57aff; }
+
+  .section-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .items { padding: 0.6rem 0; }
+
+  .item {
+    padding: 0.55rem 1.2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    align-items: start;
+    border-bottom: 1px solid #1a1a1a;
+    transition: background 0.15s;
+  }
+  .item:last-child { border-bottom: none; }
+  .item:hover { background: rgba(232,255,0,0.03); }
+
+  .item.full-width {
+    grid-template-columns: 1fr;
+  }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    background: var(--code-bg);
+    color: var(--accent);
+    padding: 0.2rem 0.45rem;
+    border-radius: 3px;
+    border: 1px solid #222;
+    word-break: break-all;
+    display: inline-block;
+    line-height: 1.5;
+  }
+
+  .desc {
+    font-size: 0.8rem;
+    color: #aaa;
+    line-height: 1.5;
+  }
+  .desc strong { color: var(--text); font-weight: 600; }
+  .desc em { color: var(--accent2); font-style: normal; }
+
+  .note {
+    margin: 0.6rem 1.2rem;
+    padding: 0.6rem 0.8rem;
+    background: rgba(232,255,0,0.05);
+    border-left: 2px solid var(--accent);
+    border-radius: 0 3px 3px 0;
+    font-size: 0.78rem;
+    color: #bbb;
+    line-height: 1.5;
+  }
+  .note strong { color: var(--accent); }
+
+  .no-results {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 4rem;
+    color: var(--muted);
+    font-size: 1.1rem;
+  }
+
+  .count-badge {
+    margin-left: auto;
+    background: var(--border);
+    color: var(--muted);
+    font-size: 0.65rem;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 0.1rem 0.4rem;
+    border-radius: 2px;
+  }
+
+  @media (max-width: 600px) {
+    header, nav, main { padding-left: 1rem; padding-right: 1rem; }
+    main { grid-template-columns: 1fr; }
+    .item { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="subtitle">Cheatsheet</div>
+    <div class="logo">La<span>TeX</span> — ściąga</div>
+  </div>
+  <input id="search" type="text" placeholder="szukaj... (np. bold, tabela)" oninput="filterAll()">
+</header>
+
+<nav id="nav">
+  <button class="nav-btn active" onclick="filterGroup('all', this)">Wszystko</button>
+  <button class="nav-btn" onclick="filterGroup('podstawy', this)">Podstawy</button>
+  <button class="nav-btn" onclick="filterGroup('tekst', this)">Tekst & Formatowanie</button>
+  <button class="nav-btn" onclick="filterGroup('struktura', this)">Struktura dokumentu</button>
+  <button class="nav-btn" onclick="filterGroup('listy', this)">Listy</button>
+  <button class="nav-btn" onclick="filterGroup('matematyka', this)">Matematyka</button>
+  <button class="nav-btn" onclick="filterGroup('tabele', this)">Tabele</button>
+  <button class="nav-btn" onclick="filterGroup('grafika', this)">Grafika</button>
+  <button class="nav-btn" onclick="filterGroup('referencje', this)">Referencje</button>
+  <button class="nav-btn" onclick="filterGroup('pakiety', this)">Pakiety</button>
+</nav>
+
+<main id="main">
+
+<!-- ===================== PODSTAWY ===================== -->
+
+<div class="section" data-group="podstawy" data-keywords="dokument szkielet struktura preambuła begin end documentclass article report book">
+  <div class="section-header">
+    <span class="section-tag">Podstawy</span>
+    <span class="section-title">Szkielet dokumentu</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>\documentclass[opcje]{klasa}</code>
+      <div class="desc">Pierwsza linia każdego pliku — jak <strong>&lt;!DOCTYPE html&gt;</strong>. Klasy: <em>article</em>, <em>report</em>, <em>book</em>, <em>beamer</em> (prezentacje)</div>
+    </div>
+    <div class="item full-width">
+      <code>\usepackage{nazwa}</code>
+      <div class="desc">Dołącza pakiet — jak <strong>&lt;script src="..."&gt;</strong> w HTML. Idzie w preambule (przed \begin{document})</div>
+    </div>
+    <div class="item full-width">
+      <code>\begin{document} ... \end{document}</code>
+      <div class="desc">Cała treść dokumentu — jak <strong>&lt;body&gt;...&lt;/body&gt;</strong>. Poza tym blokiem LaTeX ignoruje tekst.</div>
+    </div>
+    <div class="item">
+      <code>% komentarz</code>
+      <div class="desc">Komentarz — jak <strong>&lt;!-- --&gt;</strong> w HTML. Procent pomija resztę linii.</div>
+    </div>
+    <div class="item">
+      <code>\\</code>
+      <div class="desc">Nowa linia (łamanie wiersza) — jak <strong>&lt;br&gt;</strong></div>
+    </div>
+    <div class="item">
+      <code>\newpage</code>
+      <div class="desc">Nowa strona — jak <strong>page-break-after: always</strong> w CSS</div>
+    </div>
+    <div class="item">
+      <code>\par lub pusta linia</code>
+      <div class="desc">Nowy akapit — jak <strong>&lt;p&gt;</strong></div>
+    </div>
+    <div class="item">
+      <code>\noindent</code>
+      <div class="desc">Akapit bez wcięcia (LaTeX domyślnie wcina pierwsze słowo)</div>
+    </div>
+  </div>
+  <div class="note"><strong>Wskazówka:</strong> Pojedyncza pusta linia w kodzie = nowy akapit. Dwie spacje = jedna spacja (LaTeX ignoruje wielokrotne spacje).</div>
+</div>
+
+<div class="section" data-group="podstawy" data-keywords="opcje klasa a4 12pt twocolumn landscape">
+  <div class="section-header">
+    <span class="section-tag">Podstawy</span>
+    <span class="section-title">Opcje documentclass</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>[a4paper]</code>
+      <div class="desc">Format strony A4 (domyślnie jest US Letter!)</div>
+    </div>
+    <div class="item">
+      <code>[12pt]</code>
+      <div class="desc">Podstawowy rozmiar czcionki (10pt, 11pt, 12pt)</div>
+    </div>
+    <div class="item">
+      <code>[twocolumn]</code>
+      <div class="desc">Dwie kolumny tekstu — jak <strong>column-count: 2</strong> w CSS</div>
+    </div>
+    <div class="item">
+      <code>[landscape]</code>
+      <div class="desc">Strona pozioma zamiast pionowej</div>
+    </div>
+    <div class="item">
+      <code>[polish]</code>
+      <div class="desc">Polskie łamanie wyrazów (z pakietem babel)</div>
+    </div>
+    <div class="item">
+      <code>[fleqn]</code>
+      <div class="desc">Wzory matematyczne wyrównane do lewej</div>
+    </div>
+  </div>
+  <div class="note"><strong>Przykład:</strong> <code>\documentclass[a4paper,12pt]{article}</code></div>
+</div>
+
+<div class="section" data-group="podstawy" data-keywords="znaki specjalne escape ampersand procent podkreślnik tylda hash dolar">
+  <div class="section-header">
+    <span class="section-tag">Podstawy</span>
+    <span class="section-title">Znaki specjalne (ucieczka)</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>\%</code>
+      <div class="desc"><strong>%</strong> — znak procenta (sam % to komentarz!)</div>
+    </div>
+    <div class="item">
+      <code>\$</code>
+      <div class="desc"><strong>$</strong> — dolar (sam $ to tryb math!)</div>
+    </div>
+    <div class="item">
+      <code>\&amp;</code>
+      <div class="desc"><strong>&amp;</strong> — ampersand (jak <strong>&amp;amp;</strong> w HTML)</div>
+    </div>
+    <div class="item">
+      <code>\_</code>
+      <div class="desc"><strong>_</strong> — podkreślnik (sam _ to indeks dolny w math)</div>
+    </div>
+    <div class="item">
+      <code>\{  \}</code>
+      <div class="desc"><strong>{ }</strong> — nawiasy klamrowe (same { } to grupowanie)</div>
+    </div>
+    <div class="item">
+      <code>\#</code>
+      <div class="desc"><strong>#</strong> — hash / krzyżyk</div>
+    </div>
+    <div class="item">
+      <code>\textbackslash</code>
+      <div class="desc"><strong>\</strong> — backslash (sam \ to komenda!)</div>
+    </div>
+    <div class="item">
+      <code>\textasciitilde</code>
+      <div class="desc"><strong>~</strong> — tylda (sama ~ to twarda spacja)</div>
+    </div>
+    <div class="item">
+      <code>~</code>
+      <div class="desc"><strong>twarda spacja</strong> — nierozdzielna spacja, jak <strong>&amp;nbsp;</strong> w HTML</div>
+    </div>
+    <div class="item">
+      <code>---</code>
+      <div class="desc">Myślnik długi (—). <em>--</em> to półpauza (–), <em>-</em> to łącznik (-)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== TEKST I FORMATOWANIE ===================== -->
+
+<div class="section" data-group="tekst" data-keywords="bold italic pogrubienie kursywa podkreślenie czcionka">
+  <div class="section-header">
+    <span class="section-tag blue">Tekst</span>
+    <span class="section-title">Styl tekstu</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>\textbf{tekst}</code>
+      <div class="desc"><strong>Pogrubienie</strong> — jak <strong>&lt;strong&gt;</strong> lub <strong>font-weight: bold</strong></div>
+    </div>
+    <div class="item">
+      <code>\textit{tekst}</code>
+      <div class="desc"><em>Kursywa</em> — jak <strong>&lt;em&gt;</strong> lub <strong>font-style: italic</strong></div>
+    </div>
+    <div class="item">
+      <code>\underline{tekst}</code>
+      <div class="desc">Podkreślenie — jak <strong>text-decoration: underline</strong></div>
+    </div>
+    <div class="item">
+      <code>\texttt{tekst}</code>
+      <div class="desc">Czcionka maszynowa — jak <strong>&lt;code&gt;</strong></div>
+    </div>
+    <div class="item">
+      <code>\textsc{tekst}</code>
+      <div class="desc">KAPITALIKI — jak <strong>font-variant: small-caps</strong></div>
+    </div>
+    <div class="item">
+      <code>\textsf{tekst}</code>
+      <div class="desc">Bezszeryfowa — jak <strong>font-family: sans-serif</strong></div>
+    </div>
+    <div class="item">
+      <code>\textbf{\textit{...}}</code>
+      <div class="desc">Pogrubiona kursywa — komendy można zagnieżdżać jak tagi HTML</div>
+    </div>
+    <div class="item">
+      <code>\emph{tekst}</code>
+      <div class="desc">Kontekstowe wyróżnienie — kursywa w normalnym tekście, normalna w kursywie</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-group="tekst" data-keywords="rozmiar czcionka tiny small large huge normalsize">
+  <div class="section-header">
+    <span class="section-tag blue">Tekst</span>
+    <span class="section-title">Rozmiar czcionki</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>{\tiny tekst}</code>
+      <div class="desc">Najmniejszy — jak <strong>font-size: 0.5em</strong></div>
+    </div>
+    <div class="item">
+      <code>{\scriptsize tekst}</code>
+      <div class="desc">Bardzo mały (jak indeksy)</div>
+    </div>
+    <div class="item">
+      <code>{\footnotesize tekst}</code>
+      <div class="desc">Rozmiar przypisów dolnych</div>
+    </div>
+    <div class="item">
+      <code>{\small tekst}</code>
+      <div class="desc">Mały — jak <strong>font-size: 0.875em</strong></div>
+    </div>
+    <div class="item">
+      <code>{\normalsize tekst}</code>
+      <div class="desc">Normalny (domyślny)</div>
+    </div>
+    <div class="item">
+      <code>{\large tekst}</code>
+      <div class="desc">Duży</div>
+    </div>
+    <div class="item">
+      <code>{\Large tekst}</code>
+      <div class="desc">Większy</div>
+    </div>
+    <div class="item">
+      <code>{\LARGE tekst}</code>
+      <div class="desc">Jeszcze większy</div>
+    </div>
+    <div class="item">
+      <code>{\huge tekst}</code>
+      <div class="desc">Ogromny</div>
+    </div>
+    <div class="item">
+      <code>{\Huge tekst}</code>
+      <div class="desc">Największy — jak <strong>font-size: 3em</strong></div>
+    </div>
+  </div>
+  <div class="note"><strong>Uwaga:</strong> Klamry <code>{}</code> ograniczają zasięg — bez nich rozmiar zmienia się do końca dokumentu!</div>
+</div>
+
+<div class="section" data-group="tekst" data-keywords="wyrównanie center lewo prawo justify">
+  <div class="section-header">
+    <span class="section-tag blue">Tekst</span>
+    <span class="section-title">Wyrównanie tekstu</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>\begin{center} ... \end{center}</code>
+      <div class="desc">Wyśrodkowanie — jak <strong>text-align: center</strong></div>
+    </div>
+    <div class="item full-width">
+      <code>\begin{flushleft} ... \end{flushleft}</code>
+      <div class="desc">Wyrównanie do lewej — jak <strong>text-align: left</strong></div>
+    </div>
+    <div class="item full-width">
+      <code>\begin{flushright} ... \end{flushright}</code>
+      <div class="desc">Wyrównanie do prawej — jak <strong>text-align: right</strong></div>
+    </div>
+  </div>
+  <div class="note">Domyślnie LaTeX używa justyfikacji (wyjustowania do obu stron).</div>
+</div>
+
+<div class="section" data-group="tekst" data-keywords="kolor color xcolor czerwony niebieski">
+  <div class="section-header">
+    <span class="section-tag blue">Tekst</span>
+    <span class="section-title">Kolor tekstu</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>\usepackage{xcolor}</code>
+      <div class="desc">Pakiet potrzebny do kolorów — dodaj do preambuły</div>
+    </div>
+    <div class="item">
+      <code>\textcolor{red}{tekst}</code>
+      <div class="desc">Czerwony tekst — jak <strong>color: red</strong> w CSS</div>
+    </div>
+    <div class="item">
+      <code>\textcolor[HTML]{FF6600}{tekst}</code>
+      <div class="desc">Kolor hex — jak <strong>color: #FF6600</strong></div>
+    </div>
+    <div class="item">
+      <code>\colorbox{yellow}{tekst}</code>
+      <div class="desc">Kolorowe tło — jak <strong>background-color: yellow</strong></div>
+    </div>
+    <div class="item">
+      <code>\color{blue}</code>
+      <div class="desc">Zmienia kolor dla całej grupy (bez argumentu tekstowego)</div>
+    </div>
+  </div>
+  <div class="note">Gotowe kolory: <em>red, blue, green, yellow, orange, purple, gray, black, white</em> i wiele innych.</div>
+</div>
+
+<!-- ===================== STRUKTURA ===================== -->
+
+<div class="section" data-group="struktura" data-keywords="nagłówek tytuł section chapter subsection heading h1 h2 h3">
+  <div class="section-header">
+    <span class="section-tag orange">Struktura</span>
+    <span class="section-title">Nagłówki sekcji</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>\chapter{Tytuł}</code>
+      <div class="desc">Rozdział — jak <strong>&lt;h1&gt;</strong>. Tylko w klasach book/report</div>
+    </div>
+    <div class="item">
+      <code>\section{Tytuł}</code>
+      <div class="desc">Sekcja — jak <strong>&lt;h2&gt;</strong> (lub h1 w article)</div>
+    </div>
+    <div class="item">
+      <code>\subsection{Tytuł}</code>
+      <div class="desc">Podsekcja — jak <strong>&lt;h3&gt;</strong></div>
+    </div>
+    <div class="item">
+      <code>\subsubsection{Tytuł}</code>
+      <div class="desc">Pod-podsekcja — jak <strong>&lt;h4&gt;</strong></div>
+    </div>
+    <div class="item">
+      <code>\paragraph{Tytuł}</code>
+      <div class="desc">Akapit z tytułem — jak <strong>&lt;h5&gt;</strong></div>
+    </div>
+    <div class="item">
+      <code>\section*{Tytuł}</code>
+      <div class="desc">Sekcja <em>bez numeru</em> i bez wpisu do spisu treści (gwiazdka działa wszędzie)</div>
+    </div>
+  </div>
+  <div class="note">LaTeX automatycznie numeruje sekcje i buduje spis treści!</div>
+</div>
+
+<div class="section" data-group="struktura" data-keywords="tytuł autor data maketitle strona tytułowa titlepage">
+  <div class="section-header">
+    <span class="section-tag orange">Struktura</span>
+    <span class="section-title">Strona tytułowa</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>\title{Tytuł pracy}</code>
+      <div class="desc">Ustawia tytuł — deklaracja w preambule</div>
+    </div>
+    <div class="item">
+      <code>\author{Jan Kowalski}</code>
+      <div class="desc">Ustawia autora</div>
+    </div>
+    <div class="item">
+      <code>\date{2024}</code>
+      <div class="desc">Data. <em>\date{\today}</em> = aktualna data</div>
+    </div>
+    <div class="item">
+      <code>\maketitle</code>
+      <div class="desc">Wstawia stronę tytułową w miejscu wywołania — jak <strong>render()</strong></div>
+    </div>
+    <div class="item full-width">
+      <code>\begin{titlepage} ... \end{titlepage}</code>
+      <div class="desc">Własna, ręcznie zaprojektowana strona tytułowa</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-group="struktura" data-keywords="spis treści tableofcontents toc listoffigures">
+  <div class="section-header">
+    <span class="section-tag orange">Struktura</span>
+    <span class="section-title">Spis treści i indeksy</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>\tableofcontents</code>
+      <div class="desc">Automatyczny spis treści — LaTeX generuje go sam na podstawie sekcji</div>
+    </div>
+    <div class="item">
+      <code>\listoffigures</code>
+      <div class="desc">Spis rysunków (wymaga środowiska figure z \caption)</div>
+    </div>
+    <div class="item">
+      <code>\listoftables</code>
+      <div class="desc">Spis tabel</div>
+    </div>
+    <div class="item">
+      <code>\addcontentsline{toc}{section}{Tytuł}</code>
+      <div class="desc">Ręcznie dodaj wpis do spisu treści (np. dla sekcji z gwiazdką)</div>
+    </div>
+  </div>
+  <div class="note"><strong>Ważne:</strong> Skompiluj dokument <em>dwukrotnie</em>, żeby spis treści się zaktualizował (LaTeX robi to w dwóch przebiegach).</div>
+</div>
+
+<div class="section" data-group="struktura" data-keywords="abstrakt abstract streszczenie appendix dodatek">
+  <div class="section-header">
+    <span class="section-tag orange">Struktura</span>
+    <span class="section-title">Elementy dokumentu naukowego</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>\begin{abstract} ... \end{abstract}</code>
+      <div class="desc">Streszczenie (abstrakt) — sekcja specjalnie sformatowana przez LaTeX</div>
+    </div>
+    <div class="item">
+      <code>\appendix</code>
+      <div class="desc">Od tego miejsca sekcje stają się dodatkami (A, B, C zamiast 1, 2, 3)</div>
+    </div>
+    <div class="item">
+      <code>\footnote{treść}</code>
+      <div class="desc">Przypis dolny — LaTeX sam umieszcza go na dole strony i numeruje</div>
+    </div>
+    <div class="item">
+      <code>\marginpar{tekst}</code>
+      <div class="desc">Uwaga na marginesie strony</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== LISTY ===================== -->
+
+<div class="section" data-group="listy" data-keywords="lista punkty itemize enumerate description ul ol li">
+  <div class="section-header">
+    <span class="section-tag green">Listy</span>
+    <span class="section-title">Rodzaje list</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>\begin{itemize} \item ... \end{itemize}</code>
+      <div class="desc">Lista z punktami (•) — jak <strong>&lt;ul&gt;&lt;li&gt;</strong></div>
+    </div>
+    <div class="item full-width">
+      <code>\begin{enumerate} \item ... \end{enumerate}</code>
+      <div class="desc">Lista numerowana — jak <strong>&lt;ol&gt;&lt;li&gt;</strong></div>
+    </div>
+    <div class="item full-width">
+      <code>\begin{description} \item[pojęcie] ... \end{description}</code>
+      <div class="desc">Lista definicji — jak <strong>&lt;dl&gt;&lt;dt&gt;&lt;dd&gt;</strong></div>
+    </div>
+    <div class="item">
+      <code>\item[własny symbol]</code>
+      <div class="desc">Własny znacznik punktu zamiast domyślnego — np. <em>\item[-]</em></div>
+    </div>
+  </div>
+  <div class="note"><strong>Zagnieżdżanie:</strong> Listy można wkładać w listy (do 4 poziomów). LaTeX automatycznie zmienia symbol punktu na każdym poziomie.</div>
+</div>
+
+<!-- ===================== MATEMATYKA ===================== -->
+
+<div class="section" data-group="matematyka" data-keywords="wzór równanie math mode inline display equation">
+  <div class="section-header">
+    <span class="section-tag pink">Matematyka</span>
+    <span class="section-title">Tryby matematyczne</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>$wzór$</code>
+      <div class="desc">Wzór <em>inline</em> — wbudowany w tekst, jak <strong>&lt;span&gt;</strong></div>
+    </div>
+    <div class="item">
+      <code>$$wzór$$</code>
+      <div class="desc">Wzór <em>display</em> — wycentrowany w osobnej linii, jak <strong>&lt;div&gt;</strong></div>
+    </div>
+    <div class="item full-width">
+      <code>\begin{equation} wzór \end{equation}</code>
+      <div class="desc">Wzór numerowany — LaTeX dodaje numer po prawej stronie</div>
+    </div>
+    <div class="item full-width">
+      <code>\begin{equation*} wzór \end{equation*}</code>
+      <div class="desc">Wzór display bez numeru (gwiazdka = bez numeru)</div>
+    </div>
+    <div class="item full-width">
+      <code>\begin{align} a &= b \\ c &= d \end{align}</code>
+      <div class="desc">Układ równań wyrównanych w kolumnie — <em>&amp;</em> to punkt wyrównania, <em>\\</em> to nowa linia</div>
+    </div>
+  </div>
+  <div class="note"><strong>Pakiet amsmath:</strong> Dodaj <code>\usepackage{amsmath}</code> dla zaawansowanych środowisk matematycznych.</div>
+</div>
+
+<div class="section" data-group="matematyka" data-keywords="ułamek pierwiastek potęga indeks suma całka frac sqrt">
+  <div class="section-header">
+    <span class="section-tag pink">Matematyka</span>
+    <span class="section-title">Podstawowe operacje</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>\frac{licznik}{mianownik}</code>
+      <div class="desc">Ułamek — np. $\frac{1}{2}$</div>
+    </div>
+    <div class="item">
+      <code>x^{2}</code>
+      <div class="desc">Potęga / indeks górny — jak <strong>&lt;sup&gt;</strong></div>
+    </div>
+    <div class="item">
+      <code>x_{i}</code>
+      <div class="desc">Indeks dolny — jak <strong>&lt;sub&gt;</strong></div>
+    </div>
+    <div class="item">
+      <code>\sqrt{x}</code>
+      <div class="desc">Pierwiastek kwadratowy</div>
+    </div>
+    <div class="item">
+      <code>\sqrt[n]{x}</code>
+      <div class="desc">Pierwiastek n-tego stopnia</div>
+    </div>
+    <div class="item">
+      <code>\sum_{i=0}^{n}</code>
+      <div class="desc">Suma — granice pod i nad symbolem</div>
+    </div>
+    <div class="item">
+      <code>\int_{a}^{b}</code>
+      <div class="desc">Całka — z granicami a i b</div>
+    </div>
+    <div class="item">
+      <code>\lim_{x \to 0}</code>
+      <div class="desc">Granica — zapis "x dąży do 0"</div>
+    </div>
+    <div class="item">
+      <code>\prod_{i=1}^{n}</code>
+      <div class="desc">Iloczyn (pi-notacja)</div>
+    </div>
+    <div class="item">
+      <code>\infty</code>
+      <div class="desc">Symbol nieskończoności ∞</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-group="matematyka" data-keywords="litery greckie alpha beta gamma delta pi theta lambda">
+  <div class="section-header">
+    <span class="section-tag pink">Matematyka</span>
+    <span class="section-title">Litery greckie i symbole</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>\alpha  \beta  \gamma</code>
+      <div class="desc">α β γ — małe litery greckie (pisane z backslashem)</div>
+    </div>
+    <div class="item">
+      <code>\delta  \epsilon  \theta</code>
+      <div class="desc">δ ε θ</div>
+    </div>
+    <div class="item">
+      <code>\lambda  \mu  \pi</code>
+      <div class="desc">λ μ π</div>
+    </div>
+    <div class="item">
+      <code>\sigma  \phi  \omega</code>
+      <div class="desc">σ φ ω</div>
+    </div>
+    <div class="item">
+      <code>\Gamma  \Delta  \Sigma</code>
+      <div class="desc">Γ Δ Σ — wielkie litery greckie (duża pierwsza litera)</div>
+    </div>
+    <div class="item">
+      <code>\cdot  \times  \div</code>
+      <div class="desc">· × ÷ — operatory arytmetyczne</div>
+    </div>
+    <div class="item">
+      <code>\leq  \geq  \neq</code>
+      <div class="desc">≤ ≥ ≠ — porównania</div>
+    </div>
+    <div class="item">
+      <code>\approx  \equiv</code>
+      <div class="desc">≈ ≡ — aproksymacja, równoważność</div>
+    </div>
+    <div class="item">
+      <code>\in  \subset  \cup  \cap</code>
+      <div class="desc">∈ ⊂ ∪ ∩ — teoria zbiorów</div>
+    </div>
+    <div class="item">
+      <code>\forall  \exists</code>
+      <div class="desc">∀ ∃ — kwantyfikatory logiczne</div>
+    </div>
+    <div class="item">
+      <code>\partial</code>
+      <div class="desc">∂ — pochodna cząstkowa</div>
+    </div>
+    <div class="item">
+      <code>\nabla</code>
+      <div class="desc">∇ — operator nabla (gradient)</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-group="matematyka" data-keywords="nawiasy macierz matrix wektor">
+  <div class="section-header">
+    <span class="section-tag pink">Matematyka</span>
+    <span class="section-title">Nawiasy i macierze</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>\left( ... \right)</code>
+      <div class="desc">Automatycznie skalowane nawiasy — zawsze używaj tej pary!</div>
+    </div>
+    <div class="item">
+      <code>\left[ ... \right]</code>
+      <div class="desc">Skalowane nawiasy kwadratowe</div>
+    </div>
+    <div class="item">
+      <code>\left\{ ... \right\}</code>
+      <div class="desc">Skalowane nawiasy klamrowe (muszą być poprzedzone \)</div>
+    </div>
+    <div class="item full-width">
+      <code>\begin{pmatrix} a & b \\ c & d \end{pmatrix}</code>
+      <div class="desc">Macierz w nawiasach okrągłych — <em>&amp;</em> oddziela kolumny, <em>\\</em> wiersze</div>
+    </div>
+    <div class="item full-width">
+      <code>\begin{bmatrix} a & b \\ c & d \end{bmatrix}</code>
+      <div class="desc">Macierz w nawiasach kwadratowych</div>
+    </div>
+    <div class="item">
+      <code>\vec{v}</code>
+      <div class="desc">Wektor ze strzałką → v̄</div>
+    </div>
+    <div class="item">
+      <code>\overline{AB}</code>
+      <div class="desc">Kreska nad wyrażeniem</div>
+    </div>
+    <div class="item">
+      <code>\hat{x}</code>
+      <div class="desc">Daszek nad literą x̂</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== TABELE ===================== -->
+
+<div class="section" data-group="tabele" data-keywords="tabela table tabular kolumny wiersze linie">
+  <div class="section-header">
+    <span class="section-tag purple">Tabele</span>
+    <span class="section-title">Środowisko tabular</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>\begin{tabular}{|l|c|r|} ... \end{tabular}</code>
+      <div class="desc">Tabela — jak <strong>&lt;table&gt;</strong>. Kolumny: <em>l</em>=lewa, <em>c</em>=środek, <em>r</em>=prawa, <em>|</em>=pionowa linia</div>
+    </div>
+    <div class="item">
+      <code>A & B & C \\</code>
+      <div class="desc">Wiersz tabeli — <em>&amp;</em> oddziela komórki (jak <strong>&lt;td&gt;</strong>), <em>\\</em> kończy wiersz</div>
+    </div>
+    <div class="item">
+      <code>\hline</code>
+      <div class="desc">Pozioma linia — jak <strong>border-top</strong>. Dwa razy = podwójna linia</div>
+    </div>
+    <div class="item">
+      <code>\cline{2-4}</code>
+      <div class="desc">Linia tylko przez kolumny 2–4</div>
+    </div>
+    <div class="item">
+      <code>\multicolumn{3}{c}{tekst}</code>
+      <div class="desc">Komórka łącząca 3 kolumny — jak <strong>colspan="3"</strong></div>
+    </div>
+    <div class="item">
+      <code>\multirow{2}{*}{tekst}</code>
+      <div class="desc">Komórka łącząca 2 wiersze — jak <strong>rowspan="2"</strong> (pakiet multirow)</div>
+    </div>
+  </div>
+  <div class="note"><strong>Pełna tabela:</strong> Opakuj tabular w środowisko <code>\begin{table}[h] ... \caption{} \label{} \end{table}</code> żeby dodać podpis i etykietę.</div>
+</div>
+
+<div class="section" data-group="tabele" data-keywords="tabela float pozycja caption podpis label">
+  <div class="section-header">
+    <span class="section-tag purple">Tabele</span>
+    <span class="section-title">Środowisko table (float)</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>\begin{table}[h] ... \end{table}</code>
+      <div class="desc">Kontener pływający — LaTeX sam decyduje o miejscu. Parametry: <em>h</em>=tutaj, <em>t</em>=góra, <em>b</em>=dół, <em>p</em>=osobna strona</div>
+    </div>
+    <div class="item">
+      <code>\caption{Opis tabeli}</code>
+      <div class="desc">Podpis tabeli — LaTeX automatycznie numeruje</div>
+    </div>
+    <div class="item">
+      <code>\label{tab:moja}</code>
+      <div class="desc">Etykieta do odsyłaczy — jak <strong>id=""</strong> w HTML</div>
+    </div>
+    <div class="item">
+      <code>\centering</code>
+      <div class="desc">Wyśrodkowanie tabeli w środowisku table</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== GRAFIKA ===================== -->
+
+<div class="section" data-group="grafika" data-keywords="obrazek zdjęcie rysunek figure includegraphics grafika">
+  <div class="section-header">
+    <span class="section-tag">Grafika</span>
+    <span class="section-title">Wstawianie obrazów</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>\usepackage{graphicx}</code>
+      <div class="desc">Pakiet do wstawiania grafik — jak <strong>&lt;img&gt;</strong> (dodaj do preambuły)</div>
+    </div>
+    <div class="item full-width">
+      <code>\includegraphics[width=0.8\textwidth]{plik}</code>
+      <div class="desc">Wstaw obraz — jak <strong>&lt;img src="plik"&gt;</strong>. Plik bez rozszerzenia (LaTeX wybierze .pdf/.png/.jpg)</div>
+    </div>
+    <div class="item">
+      <code>[width=5cm]</code>
+      <div class="desc">Szerokość w centymetrach</div>
+    </div>
+    <div class="item">
+      <code>[scale=0.5]</code>
+      <div class="desc">Skalowanie (0.5 = połowa rozmiaru) — jak <strong>transform: scale()</strong></div>
+    </div>
+    <div class="item">
+      <code>[angle=90]</code>
+      <div class="desc">Obrót obrazu o 90 stopni</div>
+    </div>
+    <div class="item">
+      <code>[height=3cm]</code>
+      <div class="desc">Ustal tylko wysokość (szerokość skaluje się automatycznie)</div>
+    </div>
+  </div>
+  <div class="note"><strong>Konwencja:</strong> Trzymaj obrazki w folderze <em>/images/</em> i użyj <code>\graphicspath{{images/}}</code> w preambule.</div>
+</div>
+
+<div class="section" data-group="grafika" data-keywords="figura float figure caption podpis wrapfigure">
+  <div class="section-header">
+    <span class="section-tag">Grafika</span>
+    <span class="section-title">Środowisko figure</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>\begin{figure}[h] ... \end{figure}</code>
+      <div class="desc">Pływający kontener dla obrazu — LaTeX sam wybiera miejsce (jak <em>position: float</em>)</div>
+    </div>
+    <div class="item">
+      <code>\caption{Opis rysunku}</code>
+      <div class="desc">Podpis — automatycznie numeruje "Rysunek 1:", "Figure 1:" itp.</div>
+    </div>
+    <div class="item">
+      <code>\centering</code>
+      <div class="desc">Wyśrodkuj obraz wewnątrz środowiska figure</div>
+    </div>
+    <div class="item full-width">
+      <code>\begin{wrapfigure}{r}{0.4\textwidth} ... \end{wrapfigure}</code>
+      <div class="desc">Obraz z opływaniem tekstu — jak <strong>float: right</strong> w CSS. Pakiet: wrapfig</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== REFERENCJE ===================== -->
+
+<div class="section" data-group="referencje" data-keywords="label ref odsyłacz odnośnik odwołanie cross reference">
+  <div class="section-header">
+    <span class="section-tag blue">Referencje</span>
+    <span class="section-title">Odsyłacze wewnętrzne</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>\label{klucz}</code>
+      <div class="desc">Tworzy zakotwiczenie — jak <strong>id=""</strong> w HTML. Umieszcza się przy sekcji, rysunku, równaniu.</div>
+    </div>
+    <div class="item">
+      <code>\ref{klucz}</code>
+      <div class="desc">Odwołuje się do etykiety — wstawia numer sekcji/rysunku/tabeli. Jak <strong>&lt;a href="#id"&gt;</strong></div>
+    </div>
+    <div class="item">
+      <code>\pageref{klucz}</code>
+      <div class="desc">Numer strony, na której jest etykieta</div>
+    </div>
+    <div class="item">
+      <code>\eqref{klucz}</code>
+      <div class="desc">Odsyłacz do równania — jak \ref ale w nawiasach: (1)</div>
+    </div>
+  </div>
+  <div class="note">Konwencja nazewnictwa kluczy: <em>fig:nazwa</em> dla rysunków, <em>tab:nazwa</em> dla tabel, <em>sec:nazwa</em> dla sekcji, <em>eq:nazwa</em> dla równań.</div>
+</div>
+
+<div class="section" data-group="referencje" data-keywords="bibliografia bibtex cite cytowanie źródła biblio">
+  <div class="section-header">
+    <span class="section-tag blue">Referencje</span>
+    <span class="section-title">Bibliografia i cytowania</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>\cite{klucz}</code>
+      <div class="desc">Cytowanie — wstawia [1] lub [Kowalski2020] w tekście</div>
+    </div>
+    <div class="item">
+      <code>\cite[str.~15]{klucz}</code>
+      <div class="desc">Cytowanie z numerem strony: [1, str. 15]</div>
+    </div>
+    <div class="item full-width">
+      <code>\bibliography{literatura}</code>
+      <div class="desc">Wstawia bibliografię z pliku <em>literatura.bib</em> (BibTeX)</div>
+    </div>
+    <div class="item">
+      <code>\bibliographystyle{plain}</code>
+      <div class="desc">Styl bibliografii: <em>plain</em>, <em>alpha</em>, <em>ieee</em>, <em>apa</em></div>
+    </div>
+    <div class="item full-width">
+      <code>\begin{thebibliography}{99} \bibitem{} ... \end{thebibliography}</code>
+      <div class="desc">Ręczna bibliografia bez BibTeXa — prostsze dla małych dokumentów</div>
+    </div>
+  </div>
+  <div class="note"><strong>Nowoczesna alternatywa:</strong> Pakiet <em>biblatex</em> z backendem <em>biber</em> — potężniejszy i bardziej elastyczny niż BibTeX.</div>
+</div>
+
+<div class="section" data-group="referencje" data-keywords="hyperlink url link hyperref klikalne">
+  <div class="section-header">
+    <span class="section-tag blue">Referencje</span>
+    <span class="section-title">Hyperlinki (hyperref)</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>\usepackage{hyperref}</code>
+      <div class="desc">Dodaje klikalne linki i PDF zakładki — dodaj <em>jako ostatni</em> pakiet w preambule</div>
+    </div>
+    <div class="item">
+      <code>\href{https://...}{tekst}</code>
+      <div class="desc">Link tekstowy — jak <strong>&lt;a href="..."&gt;</strong></div>
+    </div>
+    <div class="item">
+      <code>\url{https://...}</code>
+      <div class="desc">Wyświetla URL jako klikalny link — jak <strong>&lt;a&gt;</strong> bez tekstu</div>
+    </div>
+    <div class="item">
+      <code>\hyperref[label]{tekst}</code>
+      <div class="desc">Klikalny odsyłacz wewnętrzny</div>
+    </div>
+  </div>
+  <div class="note">Po dodaniu hyperref odsyłacze \ref, cytowania \cite i spis treści stają się automatycznie klikalne w PDF!</div>
+</div>
+
+<!-- ===================== PAKIETY ===================== -->
+
+<div class="section" data-group="pakiety" data-keywords="pakiety usepackage babel polish język encoding inputenc fontenc">
+  <div class="section-header">
+    <span class="section-tag orange">Pakiety</span>
+    <span class="section-title">Język i kodowanie (MUST HAVE)</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>\usepackage[T1]{fontenc}</code>
+      <div class="desc">Kodowanie fontów — pozwala na poprawne polskie znaki i łamanie wyrazów</div>
+    </div>
+    <div class="item">
+      <code>\usepackage[utf8]{inputenc}</code>
+      <div class="desc">Kodowanie wejścia UTF-8 — możesz pisać ąęóźż bezpośrednio (w XeLaTeX/LuaLaTeX niepotrzebne)</div>
+    </div>
+    <div class="item">
+      <code>\usepackage[polish]{babel}</code>
+      <div class="desc">Polskie reguły językowe — łamanie wyrazów, nazwy ("Rysunek" zamiast "Figure")</div>
+    </div>
+    <div class="item">
+      <code>\usepackage[pl]{datetime}</code>
+      <div class="desc">Polska data przy \today</div>
+    </div>
+  </div>
+  <div class="note"><strong>Kolejność ma znaczenie:</strong> fontenc → inputenc → babel</div>
+</div>
+
+<div class="section" data-group="pakiety" data-keywords="pakiety popularne geometry margins margines spacing odstępy">
+  <div class="section-header">
+    <span class="section-tag orange">Pakiety</span>
+    <span class="section-title">Układ strony (geometry)</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>\usepackage[margin=2.5cm]{geometry}</code>
+      <div class="desc">Ustawia marginesy — jak <strong>margin: 2.5cm</strong> w CSS @page</div>
+    </div>
+    <div class="item full-width">
+      <code>\usepackage[top=3cm, bottom=2.5cm, left=3cm, right=2cm]{geometry}</code>
+      <div class="desc">Różne marginesy z każdej strony — jak <strong>margin-top/right/bottom/left</strong></div>
+    </div>
+    <div class="item">
+      <code>\usepackage{setspace}</code>
+      <div class="desc">Kontrola interliniowania</div>
+    </div>
+    <div class="item">
+      <code>\doublespacing</code>
+      <div class="desc">Podwójne interliniowanie (z pakietem setspace) — jak <strong>line-height: 2</strong></div>
+    </div>
+    <div class="item">
+      <code>\onehalfspacing</code>
+      <div class="desc">1,5 interliniowania — popularne w pracach akademickich</div>
+    </div>
+    <div class="item">
+      <code>\linespread{1.3}</code>
+      <div class="desc">Niestandardowe interliniowanie bez pakietu</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-group="pakiety" data-keywords="pakiety listing kod verbatim programowanie syntax highlighting">
+  <div class="section-header">
+    <span class="section-tag orange">Pakiety</span>
+    <span class="section-title">Kod źródłowy (listings)</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>\usepackage{listings}</code>
+      <div class="desc">Wstawianie kodu źródłowego z kolorowaniem składni — jak <strong>&lt;pre&gt;&lt;code&gt;</strong></div>
+    </div>
+    <div class="item full-width">
+      <code>\begin{lstlisting}[language=Python] ... \end{lstlisting}</code>
+      <div class="desc">Blok kodu z podświetlaniem — języki: Python, C, Java, HTML, SQL, bash...</div>
+    </div>
+    <div class="item full-width">
+      <code>\lstinputlisting[language=C]{plik.c}</code>
+      <div class="desc">Dołącz kod bezpośrednio z pliku — jak <strong>&lt;script src=""&gt;</strong></div>
+    </div>
+    <div class="item full-width">
+      <code>\begin{verbatim} ... \end{verbatim}</code>
+      <div class="desc">Tekst dosłowny bez kolorowania — jak <strong>&lt;pre&gt;</strong>. Wszystkie znaki specjalne są traktowane literalnie.</div>
+    </div>
+    <div class="item">
+      <code>\verb|tekst|</code>
+      <div class="desc">Inline verbatim — jak <strong>&lt;code&gt;</strong>. Między | wpisz co chcesz.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-group="pakiety" data-keywords="pakiety nagłówek stopka header footer fancyhdr">
+  <div class="section-header">
+    <span class="section-tag orange">Pakiety</span>
+    <span class="section-title">Nagłówki i stopki (fancyhdr)</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>\usepackage{fancyhdr}</code>
+      <div class="desc">Niestandardowe nagłówki i stopki stron — jak <strong>position: fixed; top: 0</strong></div>
+    </div>
+    <div class="item">
+      <code>\pagestyle{fancy}</code>
+      <div class="desc">Włącz styl fancy na wszystkich stronach</div>
+    </div>
+    <div class="item">
+      <code>\lhead{lewa strona}</code>
+      <div class="desc">Lewa część nagłówka (<em>l</em>=left, <em>c</em>=center, <em>r</em>=right)</div>
+    </div>
+    <div class="item">
+      <code>\rfoot{\thepage}</code>
+      <div class="desc">Numer strony w prawej stopce — <em>\thepage</em> = aktualny numer</div>
+    </div>
+    <div class="item">
+      <code>\renewcommand{\headrulewidth}{0.4pt}</code>
+      <div class="desc">Grubość linii pod nagłówkiem (0pt = brak linii)</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-group="pakiety" data-keywords="pakiety inne przydatne tikz pgf rysunek vector">
+  <div class="section-header">
+    <span class="section-tag orange">Pakiety</span>
+    <span class="section-title">Inne przydatne pakiety</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>amsmath</code>
+      <div class="desc">Rozszerzona matematyka — środowiska align, gather, cases i dziesiątki komend</div>
+    </div>
+    <div class="item">
+      <code>amssymb</code>
+      <div class="desc">Dodatkowe symbole matematyczne ℝ ℕ ℤ ∅ i inne</div>
+    </div>
+    <div class="item">
+      <code>booktabs</code>
+      <div class="desc">Eleganckie tabele — komendy \toprule, \midrule, \bottomrule</div>
+    </div>
+    <div class="item">
+      <code>siunitx</code>
+      <div class="desc">Jednostki SI — \SI{9.81}{m/s^2} poprawnie formatuje liczby z jednostkami</div>
+    </div>
+    <div class="item">
+      <code>tikz</code>
+      <div class="desc">Rysunki wektorowe bezpośrednio w LaTeX — jak SVG ale w kodzie LaTeX</div>
+    </div>
+    <div class="item">
+      <code>pgfplots</code>
+      <div class="desc">Wykresy naukowe — jak Chart.js ale w LaTeX, na bazie TikZ</div>
+    </div>
+    <div class="item">
+      <code>enumitem</code>
+      <div class="desc">Pełna kontrola nad wyglądem list — odstępy, etykiety, wcięcia</div>
+    </div>
+    <div class="item">
+      <code>multicol</code>
+      <div class="desc">Wielokolumnowy układ tekstu w dowolnym miejscu dokumentu</div>
+    </div>
+    <div class="item">
+      <code>tcolorbox</code>
+      <div class="desc">Kolorowe ramki i bloki — idealne do definicji, twierdzeń, uwag</div>
+    </div>
+    <div class="item">
+      <code>todonotes</code>
+      <div class="desc">Komentarze i notatki "TODO" widoczne podczas pisania</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== DODATKOWE ===================== -->
+
+<div class="section" data-group="tekst" data-keywords="własna komenda newcommand define def macro">
+  <div class="section-header">
+    <span class="section-tag blue">Tekst</span>
+    <span class="section-title">Własne komendy</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>\newcommand{\skrót}{rozwinięcie}</code>
+      <div class="desc">Definiuje skrót — jak <strong>function</strong> lub zmienna CSS. Np. \newcommand{\R}{\mathbb{R}}</div>
+    </div>
+    <div class="item full-width">
+      <code>\newcommand{\nazwa}[2]{#1 i #2}</code>
+      <div class="desc">Komenda z 2 argumentami — <em>#1</em>, <em>#2</em> jak parametry funkcji</div>
+    </div>
+    <div class="item full-width">
+      <code>\renewcommand{\komenda}{nowa definicja}</code>
+      <div class="desc">Nadpisanie istniejącej komendy LaTeX — jak <strong>override</strong></div>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-group="struktura" data-keywords="numerowanie strona numer arabic roman alph">
+  <div class="section-header">
+    <span class="section-tag orange">Struktura</span>
+    <span class="section-title">Numerowanie stron</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>\thepage</code>
+      <div class="desc">Aktualny numer strony</div>
+    </div>
+    <div class="item">
+      <code>\pagenumbering{arabic}</code>
+      <div class="desc">Cyfry arabskie: 1, 2, 3...</div>
+    </div>
+    <div class="item">
+      <code>\pagenumbering{roman}</code>
+      <div class="desc">Cyfry rzymskie: i, ii, iii... (do wstępu/spisu treści)</div>
+    </div>
+    <div class="item">
+      <code>\pagenumbering{alph}</code>
+      <div class="desc">Litery: a, b, c...</div>
+    </div>
+    <div class="item">
+      <code>\setcounter{page}{5}</code>
+      <div class="desc">Ustaw ręcznie numer strony</div>
+    </div>
+    <div class="item">
+      <code>\pagestyle{empty}</code>
+      <div class="desc">Brak nagłówka i stopki (np. na stronie tytułowej)</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-group="podstawy" data-keywords="środowisko environment begin end minipage box">
+  <div class="section-header">
+    <span class="section-tag">Podstawy</span>
+    <span class="section-title">Środowiska i grupowanie</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>\begin{minipage}{0.5\textwidth} ... \end{minipage}</code>
+      <div class="desc">Ministrona — jak <strong>&lt;div style="width:50%"&gt;</strong>. Używana do kolumn obok siebie.</div>
+    </div>
+    <div class="item">
+      <code>{ komenda }</code>
+      <div class="desc">Klamry ograniczają zasięg — jak <strong>scope</strong> w CSS. Cokolwiek wewnątrz nie "wycieka" na zewnątrz.</div>
+    </div>
+    <div class="item full-width">
+      <code>\begin{quote} ... \end{quote}</code>
+      <div class="desc">Cytat — wcięty blok tekstu, jak <strong>&lt;blockquote&gt;</strong></div>
+    </div>
+    <div class="item full-width">
+      <code>\begin{quotation} ... \end{quotation}</code>
+      <div class="desc">Dłuższy cytat — z wcięciem pierwszego wiersza każdego akapitu</div>
+    </div>
+    <div class="item full-width">
+      <code>\begin{verse} ... \end{verse}</code>
+      <div class="desc">Środowisko dla poezji — specjalne łamanie wierszy</div>
+    </div>
+  </div>
+</div>
+
+<div id="no-results" class="no-results" style="display:none">
+  Nic nie znaleziono 🔍 — spróbuj innej frazy
+</div>
+
+</main>
+
+<script>
+  let activeGroup = 'all';
+
+  function filterGroup(group, btn) {
+    activeGroup = group;
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyFilters();
+  }
+
+  function filterAll() {
+    applyFilters();
+  }
+
+  function applyFilters() {
+    const query = document.getElementById('search').value.toLowerCase().trim();
+    const sections = document.querySelectorAll('.section');
+    let visibleCount = 0;
+
+    sections.forEach(sec => {
+      const group = sec.dataset.group;
+      const keywords = (sec.dataset.keywords || '').toLowerCase();
+      const text = sec.textContent.toLowerCase();
+
+      const groupMatch = activeGroup === 'all' || group === activeGroup;
+      const searchMatch = !query || text.includes(query) || keywords.includes(query);
+
+      if (groupMatch && searchMatch) {
+        sec.classList.remove('hidden');
+        visibleCount++;
+      } else {
+        sec.classList.add('hidden');
+      }
+    });
+
+    document.getElementById('no-results').style.display = visibleCount === 0 ? 'block' : 'none';
+  }
+</script>
+
+</body>
+</html>
