@@ -248,6 +248,9 @@
   <button class="nav-btn" onclick="filterGroup('grafika', this)">Grafika</button>
   <button class="nav-btn" onclick="filterGroup('referencje', this)">Referencje</button>
   <button class="nav-btn" onclick="filterGroup('pakiety', this)">Pakiety</button>
+  <button class="nav-btn" onclick="filterGroup('wymiary', this)">Wymiary & Rozmiary</button>
+  <button class="nav-btn" onclick="filterGroup('pozycjonowanie', this)">Pozycjonowanie</button>
+  <button class="nav-btn" onclick="filterGroup('bledy', this)">⚠ Błędy & Fixes</button>
 </nav>
 
 <main id="main">
@@ -1302,6 +1305,541 @@
     <div class="item full-width">
       <code>\begin{verse} ... \end{verse}</code>
       <div class="desc">Środowisko dla poezji — specjalne łamanie wierszy</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== WYMIARY I ROZMIARY ===================== -->
+
+<div class="section" data-group="wymiary" data-keywords="jednostki wymiary cm mm pt em ex in rozmiar wielkość">
+  <div class="section-header">
+    <span class="section-tag green">Wymiary</span>
+    <span class="section-title">Jednostki długości</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>cm</code>
+      <div class="desc"><strong>Centymetry</strong> — najprostsza, fizyczna jednostka. <em>width=5cm</em> = dosłownie 5 cm na wydruku</div>
+    </div>
+    <div class="item">
+      <code>mm</code>
+      <div class="desc"><strong>Milimetry</strong> — jak cm, ale drobniejsze. <em>width=50mm</em> = to samo co 5cm</div>
+    </div>
+    <div class="item">
+      <code>in</code>
+      <div class="desc"><strong>Cale</strong> — 1in = 2.54cm. Używane głównie w ustawieniach marginesów dla US Letter</div>
+    </div>
+    <div class="item">
+      <code>pt</code>
+      <div class="desc"><strong>Punkt typograficzny</strong> — 1pt ≈ 0.35mm. Historyczna jednostka typografii, używana przy czcionkach i odstępach</div>
+    </div>
+    <div class="item">
+      <code>em</code>
+      <div class="desc"><strong>Em</strong> — szerokość litery "M" w bieżącej czcionce — jak <strong>em</strong> w CSS. Skaluje się razem z rozmiarem tekstu. <em>1em ≈ bieżący rozmiar czcionki</em></div>
+    </div>
+    <div class="item">
+      <code>ex</code>
+      <div class="desc"><strong>Ex</strong> — wysokość litery "x" w bieżącej czcionce — jak <strong>ex</strong> w CSS. Mniejsze niż em</div>
+    </div>
+    <div class="item">
+      <code>px</code>
+      <div class="desc"><strong>Piksele</strong> — działają w LaTeX, ale odradzane. 1px = 0.75pt (zależy od DPI). Nie używaj do druku!</div>
+    </div>
+    <div class="item">
+      <code>bp</code>
+      <div class="desc"><strong>Big point</strong> — punkt PostScript. 1bp = 1/72 cala. Używany przy plikach PDF/EPS</div>
+    </div>
+  </div>
+  <div class="note"><strong>Zasada prosta:</strong> Do obrazków i marginesów używaj <em>cm</em>. Do odstępów przy tekście używaj <em>em</em> lub <em>pt</em>. Nigdy nie mieszaj cm i pt bez kalkulatora.</div>
+</div>
+
+<div class="section" data-group="wymiary" data-keywords="wymiary względne textwidth linewidth columnwidth pagewidth pageheight procent relative">
+  <div class="section-header">
+    <span class="section-tag green">Wymiary</span>
+    <span class="section-title">Wymiary względne (jak % w CSS)</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>\textwidth</code>
+      <div class="desc">Pełna szerokość obszaru tekstu — jak <strong>100%</strong> rodzica. Najczęściej używane!</div>
+    </div>
+    <div class="item">
+      <code>0.5\textwidth</code>
+      <div class="desc">Połowa szerokości tekstu — jak <strong>50%</strong>. Możesz pisać dowolny mnożnik: 0.3, 0.75, 1.2...</div>
+    </div>
+    <div class="item">
+      <code>\linewidth</code>
+      <div class="desc">Szerokość bieżącej linii — prawie zawsze równa \textwidth, ale różni się w minipage i wielokolumnowych układach</div>
+    </div>
+    <div class="item">
+      <code>\columnwidth</code>
+      <div class="desc">Szerokość kolumny (w układzie dwukolumnowym = połowa \textwidth)</div>
+    </div>
+    <div class="item">
+      <code>\textheight</code>
+      <div class="desc">Pełna wysokość obszaru tekstu — jak <strong>100vh</strong> minus marginesy</div>
+    </div>
+    <div class="item">
+      <code>\paperwidth</code>
+      <div class="desc">Fizyczna szerokość strony (np. 210mm dla A4)</div>
+    </div>
+    <div class="item">
+      <code>\paperheight</code>
+      <div class="desc">Fizyczna wysokość strony (np. 297mm dla A4)</div>
+    </div>
+    <div class="item">
+      <code>\baselineskip</code>
+      <div class="desc">Bieżący odstęp między liniami tekstu — jak <strong>line-height</strong> w CSS</div>
+    </div>
+  </div>
+  <div class="note"><strong>Złota zasada:</strong> Prawie zawsze używaj <code>width=0.8\textwidth</code> zamiast sztywnych cm — wtedy obrazek automatycznie dostosuje się do każdego formatu strony i marginesów.</div>
+</div>
+
+<div class="section" data-group="wymiary" data-keywords="obrazek skalowanie resize width height scale includegraphics rozmiar">
+  <div class="section-header">
+    <span class="section-tag green">Wymiary</span>
+    <span class="section-title">Rozmiar obrazka — opcje []</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>\includegraphics[width=8cm]{obraz}</code>
+      <div class="desc">Ustaw <strong>szerokość</strong> na 8cm. Wysokość skaluje się automatycznie zachowując proporcje — jak <strong>width: 8cm; height: auto</strong></div>
+    </div>
+    <div class="item full-width">
+      <code>\includegraphics[height=5cm]{obraz}</code>
+      <div class="desc">Ustaw <strong>wysokość</strong> na 5cm, szerokość automatyczna — jak <strong>height: 5cm; width: auto</strong></div>
+    </div>
+    <div class="item full-width">
+      <code>\includegraphics[width=0.6\textwidth]{obraz}</code>
+      <div class="desc">60% szerokości tekstu — <strong>najlepszy sposób</strong> na responsywne obrazki. Zawsze wygląda dobrze niezależnie od formatu strony</div>
+    </div>
+    <div class="item full-width">
+      <code>\includegraphics[scale=0.5]{obraz}</code>
+      <div class="desc">Skaluj do 50% oryginalnego rozmiaru — jak <strong>transform: scale(0.5)</strong>. Wartość 1.0 = oryginalny rozmiar, 2.0 = podwójny</div>
+    </div>
+    <div class="item full-width">
+      <code>\includegraphics[width=6cm, height=4cm]{obraz}</code>
+      <div class="desc">Ustal <strong>oba</strong> wymiary — uwaga: <em>rozciąga obraz</em> jeśli proporcje się nie zgadzają (jak <strong>object-fit: fill</strong>)</div>
+    </div>
+    <div class="item full-width">
+      <code>\includegraphics[width=6cm, height=4cm, keepaspectratio]{obraz}</code>
+      <div class="desc">Ustaw max-wymiary zachowując proporcje — jak <strong>object-fit: contain</strong>. Obrazek nie będzie większy niż 6cm×4cm, ale nie zostanie rozciągnięty</div>
+    </div>
+    <div class="item full-width">
+      <code>\includegraphics[angle=90]{obraz}</code>
+      <div class="desc">Obrót o 90° — jak <strong>transform: rotate(90deg)</strong>. Wartości: 90, 180, 270, -45 itd.</div>
+    </div>
+    <div class="item full-width">
+      <code>\includegraphics[angle=45, width=5cm]{obraz}</code>
+      <div class="desc">Można łączyć opcje — obróć i ustaw szerokość jednocześnie</div>
+    </div>
+    <div class="item full-width">
+      <code>\includegraphics[trim=1cm 2cm 1cm 2cm, clip]{obraz}</code>
+      <div class="desc">Przytnij obraz — wartości: lewo dół prawo góra (jak <strong>clip-path</strong> lub <strong>crop</strong>). Bez <em>clip</em> przycinanie nie działa!</div>
+    </div>
+  </div>
+  <div class="note"><strong>Najpopularniejsza kombinacja do pracy:</strong> <code>[width=0.8\textwidth]</code> — obrazek zajmie 80% szerokości i będzie wyglądał profesjonalnie na każdym formacie strony.</div>
+</div>
+
+<div class="section" data-group="wymiary" data-keywords="odstęp spacing vspace hspace kern skip pionowy poziomy">
+  <div class="section-header">
+    <span class="section-tag green">Wymiary</span>
+    <span class="section-title">Odstępy — vspace i hspace</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>\vspace{1cm}</code>
+      <div class="desc">Pionowy odstęp 1cm — jak <strong>margin-bottom: 1cm</strong> lub pusty &lt;div&gt; z height</div>
+    </div>
+    <div class="item">
+      <code>\vspace{-0.5cm}</code>
+      <div class="desc">Ujemny odstęp — <em>zmniejsza</em> istniejący odstęp. Przydatne do korekty rozkładu strony</div>
+    </div>
+    <div class="item">
+      <code>\hspace{2em}</code>
+      <div class="desc">Poziomy odstęp 2em — jak <strong>padding-left: 2em</strong> lub &amp;nbsp;&amp;nbsp;</div>
+    </div>
+    <div class="item">
+      <code>\vspace*{1cm}</code>
+      <div class="desc">Gwiazdka = wymuszony odstęp nawet na początku strony (zwykły \vspace jest tam ignorowany)</div>
+    </div>
+    <div class="item">
+      <code>\smallskip</code>
+      <div class="desc">Mały pionowy odstęp (≈3pt) — predefiniowany skrót</div>
+    </div>
+    <div class="item">
+      <code>\medskip</code>
+      <div class="desc">Średni pionowy odstęp (≈6pt)</div>
+    </div>
+    <div class="item">
+      <code>\bigskip</code>
+      <div class="desc">Duży pionowy odstęp (≈12pt) — jak dodatkowy akapit</div>
+    </div>
+    <div class="item">
+      <code>\hfill</code>
+      <div class="desc">Elastyczny poziomy odstęp — wypełnia całą dostępną przestrzeń. Jak <strong>justify-content: space-between</strong>. Np. <em>Tekst lewy\hfill Tekst prawy</em></div>
+    </div>
+    <div class="item">
+      <code>\vfill</code>
+      <div class="desc">Elastyczny pionowy odstęp — rozsuwa zawartość strony. Używane na stronie tytułowej do równomiernego rozkładu</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" data-group="wymiary" data-keywords="resize scalebox rotatebox grafika transformacja">
+  <div class="section-header">
+    <span class="section-tag green">Wymiary</span>
+    <span class="section-title">Skalowanie dowolnej treści (graphicx)</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>\scalebox{0.7}{dowolny tekst lub cokolwiek}</code>
+      <div class="desc">Skaluje <em>cokolwiek</em> — tekst, wzory, tabele — do 70% rozmiaru. Nie tylko obrazki!</div>
+    </div>
+    <div class="item full-width">
+      <code>\resizebox{5cm}{!}{treść}</code>
+      <div class="desc">Dopasuj do szerokości 5cm, wysokość automatyczna (<em>!</em> = zachowaj proporcje). Jak <strong>width: 5cm; height: auto</strong> dla dowolnej treści</div>
+    </div>
+    <div class="item full-width">
+      <code>\resizebox{\textwidth}{!}{treść}</code>
+      <div class="desc">Rozciągnij do pełnej szerokości tekstu — przydatne dla szerokich tabel które nie mieszczą się na stronie</div>
+    </div>
+    <div class="item full-width">
+      <code>\rotatebox{45}{tekst}</code>
+      <div class="desc">Obróć <em>dowolną treść</em> o 45° — działa też na tekst w nagłówkach tabel!</div>
+    </div>
+  </div>
+  <div class="note"><strong>Trick z tabelą:</strong> Jeśli tabela jest za szeroka, owiń ją w <code>\resizebox{\textwidth}{!}{ \begin{tabular}...\end{tabular} }</code> — dopasuje ją do strony zachowując proporcje.</div>
+</div>
+
+<!-- ===================== POZYCJONOWANIE FLOATÓW ===================== -->
+
+<div class="section" data-group="pozycjonowanie" data-keywords="pozycjonowanie float pozycja h t b p ht htbp here top bottom figure table">
+  <div class="section-header">
+    <span class="section-tag blue">Pozycjonowanie</span>
+    <span class="section-title">Specyfikatory pozycji [h t b p !]</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>[h]</code>
+      <div class="desc"><strong>here</strong> — postaw float w tym miejscu w kodzie. LaTeX <em>spróbuje</em>, ale jeśli nie pasuje, przeniesie dalej. Często zawodzi sam.</div>
+    </div>
+    <div class="item">
+      <code>[t]</code>
+      <div class="desc"><strong>top</strong> — na górze bieżącej lub następnej strony. Najczęściej używane w pracach naukowych.</div>
+    </div>
+    <div class="item">
+      <code>[b]</code>
+      <div class="desc"><strong>bottom</strong> — na dole strony. LaTeX rzadko to respektuje jeśli mało miejsca.</div>
+    </div>
+    <div class="item">
+      <code>[p]</code>
+      <div class="desc"><strong>page</strong> — osobna strona tylko z floatami. Używane gdy float jest bardzo duży.</div>
+    </div>
+    <div class="item">
+      <code>[!]</code>
+      <div class="desc"><strong>override</strong> — wymusza zluzowanie wewnętrznych reguł LaTeXa (ile floatów na stronie, ile miejsca zostawić itp.). Nie zmusza do konkretnej pozycji — tylko rozluźnia ograniczenia.</div>
+    </div>
+    <div class="item">
+      <code>[H]</code>
+      <div class="desc"><strong>HERE absolutnie</strong> — wymusza pozycję dokładnie tu, bez żadnych negocjacji. Wymaga pakietu <em>float</em>. Najsilniejsza opcja.</div>
+    </div>
+  </div>
+  <div class="note"><strong>Jak to działa:</strong> LaTeX traktuje figury/tabele jak "pływające obiekty" (floaty) — sam decyduje gdzie je postawić żeby strona wyglądała ładnie. Specyfikatory to tylko <em>sugestie</em> lub <em>ograniczenia</em>, nie nakazy (poza [H]).</div>
+</div>
+
+<div class="section" data-group="pozycjonowanie" data-keywords="kombinacje htbp htb pozycja float kolejność">
+  <div class="section-header">
+    <span class="section-tag blue">Pozycjonowanie</span>
+    <span class="section-title">Kombinacje specyfikatorów</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>[ht]</code>
+      <div class="desc">Tu lub góra — najpierw spróbuj <em>here</em>, jeśli nie wyjdzie to <em>top</em>. Dobry kompromis dla małych floatów.</div>
+    </div>
+    <div class="item">
+      <code>[htb]</code>
+      <div class="desc">Tu, góra lub dół — LaTeX ma trzy opcje do wyboru. Dobre dla średnich floatów.</div>
+    </div>
+    <div class="item">
+      <code>[htbp]</code>
+      <div class="desc">Wszystkie opcje — LaTeX ma pełną swobodę. <strong>Domyślne zachowanie.</strong> Daje najładniejszy wynik ogólny.</div>
+    </div>
+    <div class="item">
+      <code>[!ht]</code>
+      <div class="desc">Wymuś tu lub góra, ignorując ograniczenia — częste w pracach gdzie zależy na kolejności z tekstem.</div>
+    </div>
+    <div class="item">
+      <code>[!htbp]</code>
+      <div class="desc">Pełna swoboda ale z rozluźnionymi regułami — LaTeX bardziej agresywnie stara się umieścić float blisko kodu.</div>
+    </div>
+    <div class="item">
+      <code>[H]</code>
+      <div class="desc">Absolutnie tutaj — float staje się częścią tekstu, nie pływa. Może dawać brzydkie strony, ale pozycja jest gwarantowana.</div>
+    </div>
+  </div>
+  <div class="note"><strong>Kolejność liter nie ma znaczenia</strong> — [ht] i [th] to to samo. Liczy się tylko które litery są podane, nie ich kolejność.</div>
+</div>
+
+<div class="section" data-group="pozycjonowanie" data-keywords="float problem błąd zbyt wiele floatów strona pusta clearpage barrier">
+  <div class="section-header">
+    <span class="section-tag blue">Pozycjonowanie</span>
+    <span class="section-title">Kontrola przepływu floatów</span>
+  </div>
+  <div class="items">
+    <div class="item">
+      <code>\clearpage</code>
+      <div class="desc">Wydrukuj wszystkie oczekujące floaty, potem zacznij nową stronę. <strong>Najpotężniejsze narzędzie</strong> gdy floaty uciekają za daleko.</div>
+    </div>
+    <div class="item">
+      <code>\cleardoublepage</code>
+      <div class="desc">Jak \clearpage ale następna treść zaczyna się na stronie nieparzystej (dla dwustronnego druku)</div>
+    </div>
+    <div class="item">
+      <code>\FloatBarrier</code>
+      <div class="desc">Bariera — floaty nie mogą jej przekroczyć (pakiet <em>placeins</em>). Nie wstawia nowej strony — tylko wymusza kolejność.</div>
+    </div>
+    <div class="item">
+      <code>\suppressfloats</code>
+      <div class="desc">Zabrania nowych floatów na bieżącej stronie — przenoszone na następną</div>
+    </div>
+    <div class="item full-width">
+      <code>\setcounter{topnumber}{5}</code>
+      <div class="desc">Ile floatów max na górze strony (domyślnie 2). Zwiększ jeśli LaTeX nie chce stawiać floatów.</div>
+    </div>
+    <div class="item full-width">
+      <code>\renewcommand{\topfraction}{0.9}</code>
+      <div class="desc">Max jaka część strony może być zajęta przez floaty na górze (domyślnie 0.7 = 70%). Zwiększ gdy float "nie pasuje".</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== NAJCZĘSTSZE BŁĘDY ===================== -->
+
+<div class="section" data-group="bledy" data-keywords="błędy error underfull overfull hbox vbox ostrzeżenie warning">
+  <div class="section-header">
+    <span class="section-tag" style="background:#ff4444">Błędy</span>
+    <span class="section-title">Overfull / Underfull hbox</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>Overfull \hbox (Xpt too wide)</code>
+      <div class="desc"><strong>Co to:</strong> Tekst lub element wystaje poza margines — LaTeX nie znalazł dobrego miejsca na złamanie linii. Widoczne jako czarny prostokąt na marginesie w PDF.</div>
+    </div>
+    <div class="item full-width">
+      <code>Underfull \hbox (badness 10000)</code>
+      <div class="desc"><strong>Co to:</strong> Linia ma za duże odstępy między słowami — LaTeX musiał rozciągnąć spacje żeby wyjustować. Zwykle nieszkodliwe wizualnie.</div>
+    </div>
+  </div>
+  <div class="note">
+    <strong>Przyczyny Overfull:</strong> długie słowo bez łącznika, URL w tekście, zbyt wąska kolumna.<br><br>
+    <strong>Rozwiązania:</strong><br>
+    • Dodaj <code>\usepackage[polish]{babel}</code> — automatyczne dzielenie wyrazów<br>
+    • Użyj <code>\sloppy</code> (lub środowisko <code>\begin{sloppypar}</code>) — LaTeX dopuszcza większe odstępy zamiast wystawać<br>
+    • Dodaj <code>\-</code> w słowie jako wskazówkę gdzie można przenieść: <code>nie\-spo\-dzie\-wa\-ny</code><br>
+    • Dla URL użyj <code>\url{}</code> z pakietem hyperref — umie łamać adresy
+  </div>
+</div>
+
+<div class="section" data-group="bledy" data-keywords="błędy error undefined reference label cite odsyłacz cytowanie">
+  <div class="section-header">
+    <span class="section-tag" style="background:#ff4444">Błędy</span>
+    <span class="section-title">Undefined reference / Citation</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>LaTeX Warning: Reference `tab:x' on page 3 undefined</code>
+      <div class="desc"><strong>Co to:</strong> Używasz <code>\ref{tab:x}</code> ale nigdzie nie ma <code>\label{tab:x}</code>. W PDF pojawi się <strong>??</strong> zamiast numeru.</div>
+    </div>
+    <div class="item full-width">
+      <code>LaTeX Warning: Citation `kowalski2020' undefined</code>
+      <div class="desc"><strong>Co to:</strong> Używasz <code>\cite{kowalski2020}</code> ale tego klucza nie ma w pliku .bib lub bibliografia nie jest dołączona.</div>
+    </div>
+  </div>
+  <div class="note">
+    <strong>Przyczyny:</strong> Literówka w kluczu (wielkość liter ma znaczenie!), brakujące \label, nie skompilowano wystarczająco wiele razy, brakujący plik .bib.<br><br>
+    <strong>Rozwiązanie:</strong> Skompiluj <strong>dwukrotnie</strong> (dla \ref) lub w kolejności: <em>pdflatex → bibtex → pdflatex → pdflatex</em> (dla \cite z BibTeXem). Dlaczego dwukrotnie? Bo przy pierwszym przebiegu LaTeX zbiera etykiety, dopiero przy drugim może je wstawić.
+  </div>
+</div>
+
+<div class="section" data-group="bledy" data-keywords="błędy error missing $ dollar math mode tryb matematyczny">
+  <div class="section-header">
+    <span class="section-tag" style="background:#ff4444">Błędy</span>
+    <span class="section-title">Missing $ inserted / Math mode errors</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>! Missing $ inserted</code>
+      <div class="desc"><strong>Co to:</strong> LaTeX natknął się na symbol matematyczny (_, ^, \frac itd.) poza trybem math. Próbuje się ratować dodając $ sam — i zwykle to kaskadowo psuje resztę dokumentu.</div>
+    </div>
+    <div class="item full-width">
+      <code>! Bad math environment delimiter</code>
+      <div class="desc"><strong>Co to:</strong> Niezamknięte lub źle zagnieżdżone środowisko matematyczne — np. <code>$$wzór$</code> zamiast <code>$$wzór$$</code>.</div>
+    </div>
+  </div>
+  <div class="note">
+    <strong>Najczęstsze przyczyny:</strong><br>
+    • Podkreślnik <code>_</code> w zwykłym tekście (np. w nazwie pliku) — napisz <code>\_</code><br>
+    • Znak <code>^</code> w tekście — napisz <code>\^{}</code> lub <code>\textasciicircum</code><br>
+    • Zapomniane zamknięcie <code>$</code><br>
+    • <code>\frac</code>, <code>\sum</code> itp. użyte poza <code>$ $</code><br><br>
+    <strong>Sposób debugowania:</strong> Błąd jest podany z numerem linii — ale często LaTeX zgłasza go kilka linii <em>za</em> miejscem rzeczywistego problemu.
+  </div>
+</div>
+
+<div class="section" data-group="bledy" data-keywords="błędy error too many unprocessed floats figure table float">
+  <div class="section-header">
+    <span class="section-tag" style="background:#ff4444">Błędy</span>
+    <span class="section-title">Too many unprocessed floats</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>! LaTeX Error: Too many unprocessed floats</code>
+      <div class="desc"><strong>Co to:</strong> LaTeX ma kolejkę maksymalnie ~18 floatów czekających na umieszczenie i ta kolejka się zapchała. Zdarza się gdy masz dużo obrazków/tabel z nieelastycznym pozycjonowaniem [h] i mało tekstu między nimi.</div>
+    </div>
+  </div>
+  <div class="note">
+    <strong>Przyczyny:</strong> Za dużo floatów z [h] lub [!h] w krótkim fragmencie, LaTeX nie może ich nigdzie postawić i kolejka pęka.<br><br>
+    <strong>Rozwiązania:</strong><br>
+    • Dodaj <code>\clearpage</code> co kilka obrazków — opróżnia kolejkę<br>
+    • Zmień <code>[h]</code> na <code>[htbp]</code> — daj LaTeXowi swobodę<br>
+    • Użyj pakietu <em>placeins</em> z <code>\FloatBarrier</code> zamiast walczyć z [h]<br>
+    • Użyj <code>[H]</code> z pakietem <em>float</em> — float nie trafia do kolejki, jest od razu "w tekście"
+  </div>
+</div>
+
+<div class="section" data-group="bledy" data-keywords="błędy error file not found missing package brakujący plik pakiet">
+  <div class="section-header">
+    <span class="section-tag" style="background:#ff4444">Błędy</span>
+    <span class="section-title">File not found / Missing package</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>! LaTeX Error: File `rysunek.pdf' not found</code>
+      <div class="desc"><strong>Co to:</strong> <code>\includegraphics{rysunek}</code> nie może znaleźć pliku. LaTeX szuka go w folderze dokumentu.</div>
+    </div>
+    <div class="item full-width">
+      <code>! LaTeX Error: File `pakiet.sty' not found</code>
+      <div class="desc"><strong>Co to:</strong> Pakiet z <code>\usepackage{pakiet}</code> nie jest zainstalowany w systemie TeX.</div>
+    </div>
+  </div>
+  <div class="note">
+    <strong>Dla brakujących plików graficznych:</strong><br>
+    • Sprawdź czy plik jest w tym samym folderze co .tex<br>
+    • Nie podawaj rozszerzenia: <code>\includegraphics{rysunek}</code>, nie <code>{rysunek.jpg}</code><br>
+    • Albo podaj pełną ścieżkę: <code>\includegraphics{images/rysunek}</code><br>
+    • Ustaw ścieżkę globalnie: <code>\graphicspath{{images/}{figures/}}</code><br><br>
+    <strong>Dla brakujących pakietów:</strong> W TeX Live: <code>tlmgr install nazwapakietu</code>. W Overleaf — wszystkie pakiety są dostępne od razu.
+  </div>
+</div>
+
+<div class="section" data-group="bledy" data-keywords="błędy error polskie znaki encoding utf8 fontenc inputenc ogonki">
+  <div class="section-header">
+    <span class="section-tag" style="background:#ff4444">Błędy</span>
+    <span class="section-title">Polskie znaki nie działają</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>! Package inputenc Error: Unicode char ą (U+105)</code>
+      <div class="desc"><strong>Co to:</strong> Piszesz polskie litery bezpośrednio, ale LaTeX nie wie jak je obsłużyć. Brakuje pakietów do kodowania.</div>
+    </div>
+    <div class="item full-width">
+      <code>ą ę ó ź ż wyświetlają się jako pudełka lub ??</code>
+      <div class="desc"><strong>Co to:</strong> Font nie zawiera polskich znaków — brakuje fontenc lub użyto złego kodowania fontu.</div>
+    </div>
+  </div>
+  <div class="note">
+    <strong>Rozwiązanie dla klasycznego LaTeX / pdfLaTeX:</strong><br>
+    <code>\usepackage[T1]{fontenc}</code><br>
+    <code>\usepackage[utf8]{inputenc}</code><br>
+    <code>\usepackage[polish]{babel}</code><br><br>
+    <strong>Rozwiązanie dla XeLaTeX / LuaLaTeX</strong> (nowocześniejsze silniki):<br>
+    <code>\usepackage{fontspec}</code> (zastępuje fontenc+inputenc)<br>
+    <code>\usepackage[polish]{babel}</code><br><br>
+    <strong>Dlaczego T1?</strong> Domyślne kodowanie OT1 ma tylko 128 znaków — brak polskich liter. T1 ma 256 znaków i zawiera ogonki.
+  </div>
+</div>
+
+<div class="section" data-group="bledy" data-keywords="błędy error runaway argument missing brace klamra nawias environment">
+  <div class="section-header">
+    <span class="section-tag" style="background:#ff4444">Błędy</span>
+    <span class="section-title">Runaway argument / Missing brace</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>! Runaway argument? ... ! Paragraph ended before \X was complete</code>
+      <div class="desc"><strong>Co to:</strong> Komenda oczekuje argumentu w klamrach, ale natrafiła na koniec akapitu (pustą linię) zanim znalazła zamykającą <code>}</code>. Zwykle oznacza brakującą klamrę gdzieś wcześniej.</div>
+    </div>
+    <div class="item full-width">
+      <code>! Missing } inserted</code>
+      <div class="desc"><strong>Co to:</strong> Niezamknięta klamra — LaTeX doszedł do miejsca gdzie musi już zamknąć i sam wstawia }. Błąd realny może być wiele linii wcześniej.</div>
+    </div>
+    <div class="item full-width">
+      <code>! \begin{X} ended by \end{Y}</code>
+      <div class="desc"><strong>Co to:</strong> Środowiska nie są poprawnie zagnieżdżone — otworzyłeś X, ale zamykasz Y. Jak <strong>&lt;div&gt;&lt;/span&gt;</strong> w HTML.</div>
+    </div>
+  </div>
+  <div class="note">
+    <strong>Strategia debugowania:</strong><br>
+    • Numer linii w błędzie jest często <em>za późny</em> — błąd jest wcześniej<br>
+    • Użyj edytora który podświetla dopasowanie klamr (VS Code + LaTeX Workshop)<br>
+    • Komentuj połowę dokumentu <code>%</code> żeby metodą bisekcji znaleźć błąd<br>
+    • Każde <code>\begin{}</code> musi mieć swoje <code>\end{}</code> — jak otwierające i zamykające tagi HTML
+  </div>
+</div>
+
+<div class="section" data-group="bledy" data-keywords="błędy warning float strona pusta figure za daleko pozycja">
+  <div class="section-header">
+    <span class="section-tag" style="background:#ff4444">Błędy</span>
+    <span class="section-title">Rysunek/tabela wylądował 3 strony dalej</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>\begin{figure}[h] ... \end{figure}</code>
+      <div class="desc"><strong>Problem:</strong> Wstawiasz rysunek z [h] ale LaTeX i tak przenosi go gdzieś indziej — bo na tej stronie jest za mało miejsca na float + wymagany tekst pod nim.</div>
+    </div>
+  </div>
+  <div class="note">
+    <strong>Dlaczego LaTeX to robi?</strong> Ma wbudowane estetyczne reguły: float nie może zajmować więcej niż 70% strony, musi być co najmniej 20% tekstu itp. Gdy [h] nie pasuje do tych reguł — float leci dalej.<br><br>
+    <strong>Rozwiązania od najmniej do najbardziej inwazyjnych:</strong><br>
+    1. Zmień na <code>[!ht]</code> — rozluźnia reguły<br>
+    2. Zmniejsz obraz: <code>[width=0.7\textwidth]</code> zamiast 0.9<br>
+    3. Użyj <code>[H]</code> z pakietem <em>float</em> — absolutna pozycja<br>
+    4. Dodaj <code>\clearpage</code> przed rysunkiem<br>
+    5. Dodaj więcej tekstu po rysunku — LaTeX chętniej stawia float gdy jest co "opłynąć"
+  </div>
+</div>
+
+<div class="section" data-group="bledy" data-keywords="błędy double spacing podwójne spacje akapit wcięcie indent">
+  <div class="section-header">
+    <span class="section-tag" style="background:#ff4444">Błędy</span>
+    <span class="section-title">Inne częste irytacje</span>
+  </div>
+  <div class="items">
+    <div class="item full-width">
+      <code>Spis treści się nie zaktualizował</code>
+      <div class="desc"><strong>Przyczyna:</strong> LaTeX buduje spis treści w dwóch przebiegach. <strong>Kompiluj zawsze dwukrotnie</strong> po zmianach w sekcjach.</div>
+    </div>
+    <div class="item full-width">
+      <code>Numeracja stron zaczyna się od złej liczby</code>
+      <div class="desc"><strong>Przyczyna:</strong> Strona tytułowa i strony ze spisem treści też są liczone. Użyj <code>\pagenumbering{roman}</code> dla wstępu, potem <code>\pagenumbering{arabic}</code> przed pierwszym rozdziałem.</div>
+    </div>
+    <div class="item full-width">
+      <code>Pierwszy akapit sekcji nie ma wcięcia</code>
+      <div class="desc"><strong>Przyczyna:</strong> To <em>celowe</em> zachowanie LaTeXa — konwencja typograficzna mówi że wcięcie sygnalizuje kontynuację, nie początek. Możesz to zmienić pakietem <em>indentfirst</em>.</div>
+    </div>
+    <div class="item full-width">
+      <code>Cudzysłów wygląda jak ""tekst""</code>
+      <div class="desc"><strong>Przyczyna:</strong> Nie używaj klawisza <code>"</code>. W LaTeX cudzysłów to <code>``tekst''</code> (dwa grawisy na początku, dwa apostrofy na końcu). Polskie: <code>\quotedblbase tekst\textquotedblright</code> lub pakiet <em>csquotes</em>.</div>
+    </div>
+    <div class="item full-width">
+      <code>Tekst wychodzi poza stronę w tabelce</code>
+      <div class="desc"><strong>Przyczyna:</strong> Kolumna typu <code>l/c/r</code> nie łamie tekstu — jest nieskończenie szeroka. Użyj <code>p{3cm}</code> zamiast <code>l</code> — kolumna o stałej szerokości z zawijaniem tekstu.</div>
+    </div>
+    <div class="item full-width">
+      <code>Matematyka: zbyt małe nawiasy przy ułamkach</code>
+      <div class="desc"><strong>Przyczyna:</strong> Pisanie <code>(\frac{1}{2})</code> daje małe nawiasy przy dużym ułamku. Zawsze używaj <code>\left( \frac{1}{2} \right)</code> — automatyczne skalowanie.</div>
     </div>
   </div>
 </div>
